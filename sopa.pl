@@ -39,7 +39,7 @@ verticalesSur(X,A,C) :- getVerticales(A,V), encontrar(X,V,C), subconjunto(C,V).
 verticalesNorte(_,[],_).
 verticalesNorte(X,A,C) :- invertir(X,Z), getVerticales(A,V) , encontrar(Z,V,C), subconjunto(C,V).
 
-%Busca en una fila en direccion --> si encuentra la palabra dada
+%Busca en una fila en sentido --> si encuentra la palabra dada
 %encontrar(+lpalabra,+Sopa,-listas que contienen la palabra)
 encontrar(_,[],_).
 encontrar(X,[A|AS],C):- sublista(X, A), contienelista(A,C), encontrar(X,AS,C).
