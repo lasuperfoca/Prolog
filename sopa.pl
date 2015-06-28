@@ -1,14 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%   Pueden probar las funciones principales con estos predicados:											 %%
+%%   Pueden probar las funciones principales con estos predicados:			 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %horizontalesOeste( [i,h],[[a,b,c], [d,e,f],[g,h,i]], A).
 %horizontalesEste( [e,f],[[a,b,c], [d,e,f],[g,h,i]], A).
 %verticalesNorte( [g,d],[[a,b,c], [d,e,f],[g,h,i]], A).
 %verticalesSur( [c,f],[[a,b,c], [d,e,f],[g,h,i]], A).
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Funciones principales													 %%
@@ -42,11 +39,13 @@ verticalesNorte(X,A,C) :- invertir(X,Z), getVerticales(A,V) , encontrar(Z,V,C), 
 %Busca en una fila en sentido --> si encuentra la palabra dada
 %encontrar(+lpalabra,+Sopa,-listas que contienen la palabra)
 encontrar(_,[],_).
-encontrar(X,[A|AS],C):- sublista(X, A), contienelista(A,C), encontrar(X,AS,C).
+encontrar(X,[A|AS],C):- sublist(X, A), contienelista(A,C), encontrar(X,AS,C).
 encontrar(X,[_|AS],C):- encontrar(X,AS,C).
 
 
-
+find(_,[],_).
+find(X,[A|AS],C):- sublist(X, A), contienelista(A,C), find(X,AS,C).
+find(X,[_|AS],C):- find(X,AS,C).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Funciones auxiliares													 %%
@@ -61,19 +60,9 @@ invertir([X|M],Z):-invertir(M,S), concatenar(S,[X],Z).
 concatenar([],L,L).
 concatenar([X|M],L,[X|Z]):-concatenar(M,L,Z).
 
-% Determina si lo que recibe es una lista
-lista([]):-!.
-lista([_|Y]):-lista(Y).
-
 %subconjunto(subconjunto, conjunto) ambas son listas de listas
 subconjunto([],_).
 subconjunto([A|AS] , B):- contienelista(A,B), subconjunto(AS,B).
-
-% Determina si la primer lista es prefijo de la segunda
-prefijo([],_):-!.
-prefijo([X],[X|_]):-!.
-prefijo([X|L],[X|M]):-prefijo(L,M).
-prefijo([X|T],[L|M]):-lista(X),prefijo(X,L),prefijo(T,M).
 
 % Verifica si la primer lista se encuentra en la segunda lista
 %contienelista(lista, listadeLista)
@@ -81,10 +70,10 @@ contienelista([],_):-!.
 contienelista(L,[L|_]).
 contienelista(L,[_|M]):-contienelista(L,M).
     
-%16-Determina si la primer lista es sublista de la segunda*/
-sublista([],_):-!.
-sublista(L,[X|M]):-prefijo(L,[X|M]).
-sublista(L,[_|M]):-sublista(L,M).
+%Determina si la primera es sublista de la segunda
+sublist( [], _ ).
+sublist( [X|XS], [X|XSS] ) :- sublist( XS, XSS ).
+sublist( [X|XS], [_|XSS] ) :- sublist( [X|XS], XSS ).
 
 % getVertical(+Sopa, -Columna, +Filas)
 %   Obtiene una columna de la sopa de letras.
@@ -95,4 +84,3 @@ getVertical([[S|Opitas]|Resto], [S|Columna], [Opitas|Filas]) :-  getVertical(Res
 %   Obtiene la lista con todas las columnas de la sopa de letras.
 getVerticales([[]|_], []).
 getVerticales(Sopa, [Vertical|Resto]) :- getVertical(Sopa, Vertical, Opa),  getVerticales(Opa, Resto).
-
