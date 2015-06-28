@@ -65,10 +65,6 @@ encontrar(X,[A|AS],C):- sublista(X, A), contienelista(A,C), encontrar(X,AS,C).
 encontrar(X,[_|AS],C):- encontrar(X,AS,C).
 
 
-find(_,[],_).
-find(X,[A|AS],C):- sublista(X, A), contienelista(A,C), find(X,AS,C).
-find(X,[_|AS],C):- find(X,AS,C).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Funciones auxiliares													 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
