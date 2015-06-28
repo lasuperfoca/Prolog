@@ -1,13 +1,67 @@
-%% TP PROLOG
-%auxencontrarEnHorizontales(+lpalabra,+Sopa,-listas que contienen la palabra)
-auxencontrarEnHorizontales(_,[],_).
-auxencontrarEnHorizontales(X,[A|AS],C):- sublista(X, A), contienelista(A,C), auxencontrarEnHorizontales(X,AS,C).
-auxencontrarEnHorizontales(X,[_|AS],C):- auxencontrarEnHorizontales(X,AS,C).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Pueden probar las funciones principales con estos predicados:											 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%encontrarEnHorizontales(+lpalabra,+Sopa,-listas que contienen la palabra)
-encontrarEnHorizontales(_,[],_).
-encontrarEnHorizontales(X,A,C) :-  auxencontrarEnHorizontales(X,A,C), subconjunto(C,A).
+%horizontalesOeste( [i,h],[[a,b,c], [d,e,f],[g,h,i]], A).
+%horizontalesEste( [e,f],[[a,b,c], [d,e,f],[g,h,i]], A).
+%verticalesNorte( [g,d],[[a,b,c], [d,e,f],[g,h,i]], A).
+%verticalesSur( [c,f],[[a,b,c], [d,e,f],[g,h,i]], A).
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Funciones principales													 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%horizontalesEste(+lpalabra,+Sopa,subconjuto de sopa que contiene "palabra")
+% Direccion Horizontal
+% Sentido Oeste-->Este
+horizontalesEste(_,[],_).
+horizontalesEste(X,A,C) :-  encontrar(X,A,C), subconjunto(C,A).
+
+%horizontalesOeste(+lpalabra,+Sopa,subconjuto de sopa que contiene "palabra")
+% Direccion Horizontal
+% Sentido Este-->Oeste
+horizontalesOeste(_,[],_).
+horizontalesOeste(X,A,C) :- invertir(X,Z), encontrar(Z,A,C), subconjunto(C,A).
+
+%verticalesSur(+lpalabra,+Sopa,subconjuto de sopa que contiene "palabra")
+% Direccion Vertical
+% Sentido Norte-->Sur
+verticalesSur(_,[],_).
+verticalesSur(X,A,C) :- getVerticales(A,V), encontrar(X,V,C), subconjunto(C,V).
+
+%verticalesNorte(+lpalabra,+Sopa,subconjuto de sopa que contiene "palabra")
+% Direccion Vertical
+% Sentido Sur-->Norte
+verticalesNorte(_,[],_).
+verticalesNorte(X,A,C) :- invertir(X,Z), getVerticales(A,V) , encontrar(Z,V,C), subconjunto(C,V).
+
+%Busca en una fila en direccion --> si encuentra la palabra dada
+%encontrar(+lpalabra,+Sopa,-listas que contienen la palabra)
+encontrar(_,[],_).
+encontrar(X,[A|AS],C):- sublista(X, A), contienelista(A,C), encontrar(X,AS,C).
+encontrar(X,[_|AS],C):- encontrar(X,AS,C).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Funciones auxiliares													 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Invierte la lista que recibe en el primer nivel
+invertir([X],[X]).
+invertir([X|M],Z):-invertir(M,S), concatenar(S,[X],Z).
+
+%Concatena dos listas
+concatenar([],L,L).
+concatenar([X|M],L,[X|Z]):-concatenar(M,L,Z).
+
+% Determina si lo que recibe es una lista
 lista([]):-!.
 lista([_|Y]):-lista(Y).
 
@@ -15,14 +69,13 @@ lista([_|Y]):-lista(Y).
 subconjunto([],_).
 subconjunto([A|AS] , B):- contienelista(A,B), subconjunto(AS,B).
 
-%*15-Determina si la primer lista es prefijo de la segunda*/
-
+% Determina si la primer lista es prefijo de la segunda
 prefijo([],_):-!.
 prefijo([X],[X|_]):-!.
 prefijo([X|L],[X|M]):-prefijo(L,M).
 prefijo([X|T],[L|M]):-lista(X),prefijo(X,L),prefijo(T,M).
-/*------------------------------------------------------------------*/
 
+% Verifica si la primer lista se encuentra en la segunda lista
 %contienelista(lista, listadeLista)
 contienelista([],_):-!.
 contienelista(L,[L|_]).
@@ -33,96 +86,13 @@ sublista([],_):-!.
 sublista(L,[X|M]):-prefijo(L,[X|M]).
 sublista(L,[_|M]):-sublista(L,M).
 
-%reverseall(+Normal, ?Raras)
-%   Devuelve en Raras una lista con todas las palabras de Normal pero inversas.
-reverseall([],[]).
-reverseall([X|Xs], [Y|Ys]) :-
-  reverse(X, Y),
-  reverseall(Xs, Ys).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%   Funciones para obtener todas las palabras de la sopa de letra indicada  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % getVertical(+Sopa, -Columna, +Filas)
 %   Obtiene una columna de la sopa de letras.
 getVertical([], [], []).
-getVertical([[S|Opitas]|Resto], [S|Columna], [Opitas|Filas]) :-
-  getVertical(Resto, Columna, Filas).
+getVertical([[S|Opitas]|Resto], [S|Columna], [Opitas|Filas]) :-  getVertical(Resto, Columna, Filas).
 
 % getVerticales(+Sopa, -Verticales)
 %   Obtiene la lista con todas las columnas de la sopa de letras.
 getVerticales([[]|_], []).
-getVerticales(Sopa, [Vertical|Resto]) :-
-  getVertical(Sopa, Vertical, Opa),
-  getVerticales(Opa, Resto).
+getVerticales(Sopa, [Vertical|Resto]) :- getVertical(Sopa, Vertical, Opa),  getVerticales(Opa, Resto).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% nVacias(?Num, -Vacias)
-%   Crea una lista con un caracter "vacio" o no valido para la sopa de letras.
-%   ($ en nuestro caso), utilizado para poder desfasar la matriz y obtener las
-%   diagonales.
-nVacias(0,[]).
-nVacias(N, [$|Vacias]) :-
-  N > 0,
-  NResto is N - 1,
-  nVacias(NResto, Vacias).
-
-% quitarVacias(+Sucias, ?Diagonales)
-%   Quita los caracteres "vacios" de las palabras obtenidas en Sucias que son
-%   las palabras que corresponden a las diagonales de la matriz.
-quitarVacias([], []).
-quitarVacias([Verti|Cales], [Diago|Nales]) :-
-  delete(Verti, $, Diago),
-  quitarVacias(Cales, Nales).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% getDiagPrinc(+Sopa, +Tam, -DiagPrinc)
-%   Funcion que obtiene todas las palabras de la sopa de letras en direccion
-%   NorOeste -> SurEste
-getDiagPrinc(Sopa, Tam, DiagPrinc) :-
-  N is Tam - 1,
-  getDesfasadasPrinc(Sopa, N, 0, Defasadas),
-  getVerticales(Defasadas, Verticales),
-  quitarVacias(Verticales, DiagPrinc).
-
-% getDesfasadasPrinc(+Sopa, ?Izq, ?Der, -Desfasadas)
-%   Desfasa las filas de la sopa de letras para poder obtener las palabras
-%   diagonales NorOeste -> SurEste
-getDesfasadasPrinc([], -1, _, []).
-getDesfasadasPrinc([Sopi|Tas], Izq, Der, [SopiDes|Fasadas]) :-
-  Izq >= 0,
-  IzqN is Izq - 1,
-  DerN is Der + 1,
-  nVacias(Izq, LIzq),
-  nVacias(Der, LDer),
-  append(LIzq, Sopi, IzqSopita),
-  append(IzqSopita, LDer, SopiDes),
-  getDesfasadasPrinc(Tas, IzqN, DerN, Fasadas).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% getDiagSecun(+Sopa, +Tam, -DiagSecun)
-%   Funcion que obtiene todas las palabras de la sopa de letras en direccion
-%   NorEste -> SurOeste
-getDiagSecun(Sopa, Tam, DiagSecun) :-
-  N is Tam - 1,
-  getDesfasadasSecun(Sopa, 0, N, Defasadas),
-  getVerticales(Defasadas, Verticales),
-  quitarVacias(Verticales, DiagSecun).
-
-% getDesfasadasSecun(+Sopa, ?Izq, ?Der, -Desfasadas)
-%   Desfasa las filas de la sopa de letras para poder obtener las palabras
-%   diagonales NorEste -> SurOeste
-getDesfasadasSecun([], _, -1, []).
-getDesfasadasSecun([Sopi|Tas], Izq, Der, [SopiDes|Fasadas]) :-
-  Der >= 0,
-  IzqN is Izq + 1,
-  DerN is Der - 1,
-  nVacias(Izq, LIzq),
-  nVacias(Der, LDer),
-  append(LIzq, Sopi, IzqSopita),
-  append(IzqSopita, LDer, SopiDes),
-  getDesfasadasSecun(Tas, IzqN, DerN, Fasadas).
