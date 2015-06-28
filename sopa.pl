@@ -7,10 +7,32 @@
 %verticalesNorte( [g,d],[[a,b,c], [d,e,f],[g,h,i]], A).
 %verticalesSur( [c,f],[[a,b,c], [d,e,f],[g,h,i]], A).
 
+empezarBien :-
+write('Ingrese la sopa de letras en forma de lista de listas.Debe ser cuadrada'),
+SOPA1 = [[h,o,l,a,r,q,d],[a,f,g,h,q,x,y],[m,m,a,f,f,f,q],[f,q,r,g,u,k,l],[r,f,q,f,v,x,g],[r,f,j,a,x,z,q],[b,c,q,c,x,h,e]],
+tab(20),
+print(SOPA1),
+matrizCuadrada(SOPA1),
+tab(20),
+write('ingrese la palabra a buscar'),
+read(Palabra).
+%faltan:
+%string_to_list
+%buscarpalabra
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Funciones principales													 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%matrizCuadrada(+Lista)
+matrizCuadrada([]).
+matrizCuadrada([A|[]]).
+matrizCuadrada([A,B|T]):-
+length(A,LENGTH1),
+length(B,LENGTH2),
+LENGTH1==LENGTH2,
+matrizCuadrada([B|T]).
 
 %horizontalesEste(+lpalabra,+Sopa,subconjuto de sopa que contiene "palabra")
 % Direccion Horizontal
